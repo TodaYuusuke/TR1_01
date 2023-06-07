@@ -106,9 +106,11 @@
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\TextureManager.cpp" />
     <ClCompile Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.cpp" />
     <ClCompile Include="C:\KamataEngine\Adapter\Novice.cpp" />
+    <ClCompile Include="Class\Object\Smoke.cpp" />
+    <ClCompile Include="Class\Object\SmokeManager.cpp" />
+    <ClCompile Include="Class\Timer.cpp" />
+    <ClCompile Include="Class\Utility.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Smoke.cpp" />
-    <ClCompile Include="SmokeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\math\Matrix4x4.h" />
@@ -137,9 +139,11 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\input\Input.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\scene\GameScene.h" />
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
+    <ClInclude Include="Class\Object\Smoke.h" />
+    <ClInclude Include="Class\Object\SmokeManager.h" />
+    <ClInclude Include="Class\Timer.h" />
+    <ClInclude Include="Class\Utility.h" />
     <ClInclude Include="Matrix4x4Func.h" />
-    <ClInclude Include="Smoke.h" />
-    <ClInclude Include="SmokeManager.h" />
     <ClInclude Include="Vector3Func.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

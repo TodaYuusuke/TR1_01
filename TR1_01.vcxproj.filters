@@ -17,6 +17,9 @@
     <Filter Include="Class">
       <UniqueIdentifier>{7e702cbf-3cef-45ff-b607-60bcde1d1bb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Class\Smoke">
+      <UniqueIdentifier>{e56ff976-fe1a-4efe-b1ee-8e3ec80a299a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\DirectXCommon.cpp">
@@ -38,10 +41,16 @@
     <ClCompile Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
-    <ClCompile Include="Smoke.cpp">
+    <ClCompile Include="Class\Utility.cpp">
       <Filter>Class</Filter>
     </ClCompile>
-    <ClCompile Include="SmokeManager.cpp">
+    <ClCompile Include="Class\Object\Smoke.cpp">
+      <Filter>Class\Smoke</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\Object\SmokeManager.cpp">
+      <Filter>Class\Smoke</Filter>
+    </ClCompile>
+    <ClCompile Include="Class\Timer.cpp">
       <Filter>Class</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,10 +125,16 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.h" />
     <ClInclude Include="Vector3Func.h" />
     <ClInclude Include="Matrix4x4Func.h" />
-    <ClInclude Include="Smoke.h">
+    <ClInclude Include="Class\Utility.h">
       <Filter>Class</Filter>
     </ClInclude>
-    <ClInclude Include="SmokeManager.h">
+    <ClInclude Include="Class\Object\Smoke.h">
+      <Filter>Class\Smoke</Filter>
+    </ClInclude>
+    <ClInclude Include="Class\Object\SmokeManager.h">
+      <Filter>Class\Smoke</Filter>
+    </ClInclude>
+    <ClInclude Include="Class\Timer.h">
       <Filter>Class</Filter>
     </ClInclude>
   </ItemGroup>

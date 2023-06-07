@@ -1,6 +1,8 @@
 #include <Novice.h>
-#include <time.h>
-#include "SmokeManager.h"
+#include <imgui.h>
+#include <cstdlib>
+#include "Class/Object/SmokeManager.h"
+#include "Class/Timer.h"
 
 const char kWindowTitle[] = "TR1_01_LE2B_21_トダ_ユウスケ";
 
@@ -14,12 +16,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	// 実行開始時間
-	clock_t start = clock();    // スタート時間
-	start;
+	// 乱数初期化
+	srand((unsigned int)time(nullptr));
+
+	// 時間計測系 //
+	Timer timer;
 	// 処理回数
 	long frame = 0;
-	frame;
+
 
 	// 煙
 	SmokeManager* smokeManager = new SmokeManager();
@@ -29,6 +33,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// フレームの開始
 		Novice::BeginFrame();
 
+
+		// 計測終了
+		timer.End();
+		// FPS系の情報描画
+		timer.Show();
+		// 計測開始
+		timer.Start();
+
 		// キー入力を受け取る
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
@@ -37,11 +49,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		// SPACEが押されている間、煙追加
+		// F5でリセット
+		if (keys[DIK_R] && !preKeys[DIK_R]) {
+			timer.Initialize();
+			smokeManager->Initialize();
+		}
+		// SPACEが押されている間、煙（×5）追加
 		if (keys[DIK_SPACE]) {
-			smokeManager->MakeNewEffect({ 1280.0f / 2.0f,720.0f});
+			for (int i = 0; i < 5; i++) {
+				smokeManager->AddEffect({ 1280.0f / 2.0f,720.0f });
+			}
+		}
+		// RightClickが押されている間、カーソル位置に煙（×5）追加
+		if (Novice::IsPressMouse(1)) {
+			int x, y;
+			Novice::GetMousePosition(&x, &y);
+			for (int i = 0; i < 1; i++) {
+				smokeManager->AddEffect({ (float)x,(float)y });
+			}
 		}
 
+
+		// 更新処理
 		smokeManager->Update();
 
 		///
@@ -52,9 +81,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		// 各種情報表示
-
+		// 描画処理
 		smokeManager->Draw();
+
+		// 処理回数+1
+		frame++;
 
 		///
 		/// ↑描画処理ここまで
