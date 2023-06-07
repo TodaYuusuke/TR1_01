@@ -23,7 +23,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Timer timer;
 	// 処理回数
 	long frame = 0;
-
+	// 座標
+	int x, y;
 
 	// 煙
 	SmokeManager* smokeManager = new SmokeManager();
@@ -37,7 +38,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 計測終了
 		timer.End();
 		// FPS系の情報描画
-		timer.Show();
+		timer.CallImGui();
 		// 計測開始
 		timer.Start();
 
@@ -49,26 +50,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		// F5でリセット
+		// マウス座標取得
+		Novice::GetMousePosition(&x, &y);
+
+		// Rでリセット
 		if (keys[DIK_R] && !preKeys[DIK_R]) {
 			timer.Initialize();
 			smokeManager->Initialize();
 		}
 		// SPACEが押されている間、煙（×5）追加
 		if (keys[DIK_SPACE]) {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 1; i++) {
 				smokeManager->AddEffect({ 1280.0f / 2.0f,720.0f });
 			}
 		}
 		// RightClickが押されている間、カーソル位置に煙（×5）追加
 		if (Novice::IsPressMouse(1)) {
-			int x, y;
-			Novice::GetMousePosition(&x, &y);
 			for (int i = 0; i < 1; i++) {
 				smokeManager->AddEffect({ (float)x,(float)y });
 			}
 		}
 
+		// カプセルを作成する
+		if (Novice::IsTriggerMouse(2)) {
+			smokeManager->AddCapsule({ (float)x,(float)y });
+		}
+		else if (Novice::IsPressMouse(2)){
+			smokeManager->SetEndPositionCapsule({ (float)x,(float)y });
+		}
 
 		// 更新処理
 		smokeManager->Update();

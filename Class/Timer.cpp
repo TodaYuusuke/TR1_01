@@ -63,7 +63,7 @@ double Timer::GetElapsedTimeH() {
     return GetElapsedTimeM() / 60.0;
 }
 
-void Timer::Show() {
+void Timer::CallImGui() {
     // 60処理ごとに一度取得するFPS
     if (elapsedFrame_ % 60 == 0) {
         frameRate = GetFPS();
@@ -79,5 +79,6 @@ void Timer::Show() {
     ImGui::Text("R ... Reset");
     ImGui::Text("Space ... AddEffect");
     ImGui::Text("RightClick ... AddEffect at Cursor");
+    ImGui::Text("MiddleClick ... Create Capsule");
     ImGui::End();
 }

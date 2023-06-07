@@ -21,7 +21,8 @@ void SmokeManager::Initialize() {
 	for (Smoke* s : smoke_) {
 		delete s;
 	}
-
+	capsules.clear();
+	
 	smokeTexture = Novice::LoadTexture("./Resources/Smoke.png");
 }
 
@@ -68,6 +69,43 @@ void SmokeManager::Draw() {
 		}
 	}
 
+	for (MortonCapsule c : capsules) {
+		// 始点から終点までの角度
+		float angle = -Utility::GetRadian(c.collision.startPosision, c.collision.endPosision);
+
+		// 円の上下の点を求める
+		Vector2 capsuleLineUpPos = { 0,c.collision.radius };
+		Vector2 capsuleLineDownPos = { 0,-c.collision.radius };
+
+		// 始点から終点までの角度分回転させる
+		capsuleLineUpPos = Utility::TurnVector2(capsuleLineUpPos, angle);
+		capsuleLineDownPos = Utility::TurnVector2(capsuleLineDownPos, angle);
+
+		// カプセルと線の描画
+		Novice::DrawEllipse((int)c.collision.startPosision.x, (int)c.collision.startPosision.y, (int)c.collision.radius, (int)c.collision.radius, 0, WHITE, kFillModeWireFrame);
+		Novice::DrawEllipse((int)c.collision.endPosision.x, (int)c.collision.endPosision.y, (int)c.collision.radius, (int)c.collision.radius, 0, WHITE, kFillModeWireFrame);
+		Novice::DrawLine((int)(capsuleLineUpPos.x + c.collision.startPosision.x), (int)(capsuleLineUpPos.y + c.collision.startPosision.y), (int)(capsuleLineUpPos.x + c.collision.endPosision.x), (int)(capsuleLineUpPos.y + c.collision.endPosision.y), WHITE);
+		Novice::DrawLine((int)(capsuleLineDownPos.x + c.collision.startPosision.x), (int)(capsuleLineDownPos.y + c.collision.startPosision.y), (int)(capsuleLineDownPos.x + c.collision.endPosision.x), (int)(capsuleLineDownPos.y + c.collision.endPosision.y), WHITE);
+
+
+		// デバッグ用にモートン序列番号を表示
+		if (isShowMortonNumber) {
+			// カプセルのx座標の範囲を求める
+			float minX = min(capsules.back().collision.startPosision.x, capsules.back().collision.endPosision.x);
+			float maxX = max(capsules.back().collision.startPosision.x, capsules.back().collision.endPosision.x);
+
+			// カプセルのy座標の範囲を求める
+			float minY = min(capsules.back().collision.startPosision.y, capsules.back().collision.endPosision.y);
+			float maxY = max(capsules.back().collision.startPosision.y, capsules.back().collision.endPosision.y);
+
+			// 最小の矩形の左上座標と右下座標を設定
+			Vector2 leftUp = { minX - capsules.back().collision.radius, minY - capsules.back().collision.radius };
+			Vector2 rightBottom = { maxX + capsules.back().collision.radius, maxY + capsules.back().collision.radius };
+
+			Novice::ScreenPrintf((int)leftUp.x - 10, (int)leftUp.y - 10, "%d", GetMortonNumber(leftUp, rightBottom));
+		}
+	}
+
 	for (Smoke* s : smoke_) {
 		s->Draw(smokeTexture);
 	}
@@ -85,6 +123,27 @@ void SmokeManager::AddEffect(Vector2 position) {
 
 	// 登録する
 	smoke_.push_back(newSmoke);
+}
+
+void SmokeManager::AddCapsule(Vector2 position) {
+	capsules.push_back({ 0,{ position, position,20 } });
+}
+void SmokeManager::SetEndPositionCapsule(Vector2 position) {
+	capsules.back().collision.endPosision = position;
+
+	// カプセルのx座標の範囲を求める
+	float minX = min(capsules.back().collision.startPosision.x, capsules.back().collision.endPosision.x);
+	float maxX = max(capsules.back().collision.startPosision.x, capsules.back().collision.endPosision.x);
+
+	// カプセルのy座標の範囲を求める
+	float minY = min(capsules.back().collision.startPosision.y, capsules.back().collision.endPosision.y);
+	float maxY = max(capsules.back().collision.startPosision.y, capsules.back().collision.endPosision.y);
+
+	// 最小の矩形の左上座標と右下座標を設定
+	Vector2 leftUp = { minX - capsules.back().collision.radius, minY - capsules.back().collision.radius };
+	Vector2 rightBottom = { maxX + capsules.back().collision.radius, maxY + capsules.back().collision.radius };
+
+	capsules.back().mortonNumber = GetMortonNumber(leftUp, rightBottom);;
 }
 
 
@@ -110,10 +169,11 @@ void SmokeManager::CallImGui() {
 		ImGui::SliderInt(" ", &kQuadTreeResolution, 1, 8);
 	}
 	ImGui::Text("");
-	ImGui::Text("khitVelocityCoefficient");
-	ImGui::SliderFloat("  ", &Smoke::kHitVelocityCoefficient, 0.0f, 0.01f);
+	ImGui::Text("NegativeCoefficient");
+	ImGui::SliderFloat("x", &Smoke::xNegativeCoefficient, 0.0f, 0.01f);
+	ImGui::SliderFloat("y", &Smoke::yNegativeCoefficient, 0.0f, 0.01f);
 	ImGui::Text("kHorizontalVelocityNegativeCoefficient");
-	ImGui::SliderFloat("   ", &Smoke::kHorizontalVelocityNegativeCoefficient, 0.0f, 0.85f);
+	ImGui::SliderFloat("  ", &Smoke::kHorizontalVelocityNegativeCoefficient, 0.0f, 0.85f);
 	ImGui::Text("");
 	// 
 	ImGui::End();
@@ -136,15 +196,62 @@ void SmokeManager::BruteForceObjectCollisionDetection(std::list<Smoke*> smoke) {
 				}
 			}
 			else {
+				Vector2 correctionVec1, correctionVec2;
+
 				// 円同士の当たり判定を行う
-				if (Utility::CheckEllipseCollision(collision1, collision2)) {
-					// お互いに逆ベクトルをVelocityに追加
-					(*it1)->AddVelocity(Utility::CalculateReverseVector(collision1.center, collision2.center));
-					(*it2)->AddVelocity(Utility::CalculateReverseVector(collision2.center, collision1.center));
+				if (Utility::CheckEllipseCollision(collision1, collision2, correctionVec1, correctionVec2)) {
+					(*it1)->AddVelocity(correctionVec1);
+					(*it2)->AddVelocity(correctionVec2);
+				}
+
+				// カプセルとの当たり判定を検証する
+				for (MortonCapsule capsule : capsules) {
+					// Smokeインスタンスの当たり判定を取得
+					Utility::Collision collision = (*it1)->GetCollision();
+
+					// 四角の時は実装してないので、円のときのみ行う
+					if (!Smoke::shapeIsBox) {
+						// 円とカプセルの当たり判定を行う
+						(*it1)->HitCapsule(Utility::CheckCapsuleCollision(collision, capsule.collision));
+					}
 				}
 			}
 		}
 	}
+}
+
+int SmokeManager::GetMortonNumber(Vector2 leftUp, Vector2 rightDown) {
+	// 空間１つの辺の長さ（画面を覆う最小の正方形（1280*1280）で計算する）
+	float cellSize = 1280.0f / powf(2.0f, (float)kQuadTreeResolution);
+
+	// モートン空間番号を出すために座標を変換
+	leftUp.x /= cellSize;
+	leftUp.y /= cellSize;
+	rightDown.x /= cellSize;
+	rightDown.y /= cellSize;
+
+	// モートン空間番号を計算
+	int leftUpMortonNum = GetMortonOrder((int)leftUp.x, (int)leftUp.y);
+	int rightDownMortonNum = GetMortonOrder((int)rightDown.x, (int)rightDown.y);
+
+	// 排他的論理和を求める
+	int xorMortonNum = leftUpMortonNum ^ rightDownMortonNum;
+	// 空間レベル
+	int spaceLevel = kQuadTreeResolution;
+
+	// 空間レベルを出す
+	while (xorMortonNum > 0) {
+		xorMortonNum >>= 2;
+		spaceLevel--;
+	}
+
+	// 領域の所属するモートン空間番号を出す
+	int mortonNum = rightDownMortonNum >> ((kQuadTreeResolution - spaceLevel) * 2);
+	// 線形4分木に直す
+	mortonNum += (int)((powf(4.0f, (float)(spaceLevel)) - 1.0f) / 3.0f);
+
+	// モートン序列を返す
+	return mortonNum;
 }
 
 void SmokeManager::OptimizedCollisionDetection() {
@@ -153,9 +260,6 @@ void SmokeManager::OptimizedCollisionDetection() {
 	std::map<int, std::list<Smoke*>> cells{};
 
 	for (Smoke* s : smoke_) {
-		// 空間１つの辺の長さ（画面を覆う最小の正方形（1280*1280）で計算する）
-		float cellSize = 1280.0f / powf(2.0f, (float)kQuadTreeResolution);
-
 		// 左上の座標
 		Vector2 leftUp = s->GetCollision().center;
 		leftUp.x -= s->GetCollision().size / 2.0f;
@@ -165,34 +269,10 @@ void SmokeManager::OptimizedCollisionDetection() {
 		rightDown.x += s->GetCollision().size / 2.0f;
 		rightDown.y += s->GetCollision().size / 2.0f;
 
-		// モートン空間番号を出すために座標を変換
-		leftUp.x /= cellSize;
-		leftUp.y /= cellSize;
-		rightDown.x /= cellSize;
-		rightDown.y /= cellSize;
-
-		// モートン空間番号を計算
-		int leftUpMortonNum = GetMortonOrder((int)leftUp.x, (int)leftUp.y);
-		int rightDownMortonNum = GetMortonOrder((int)rightDown.x, (int)rightDown.y);
-
-		// 排他的論理和を求める
-		int xorMortonNum = leftUpMortonNum ^ rightDownMortonNum;
-		// 空間レベル
-		int spaceLevel = kQuadTreeResolution;
-
-		// 空間レベルを出す
-		while (xorMortonNum > 0) {
-			xorMortonNum >>= 2; 
-			spaceLevel--;
-		}
-
-		// 領域の所属するモートン空間番号を出す
-		int mortonNum = rightDownMortonNum >> ((kQuadTreeResolution - spaceLevel) * 2);
-		// 線形4分木に直す
-		mortonNum += (int)((powf(4.0f, (float)(spaceLevel)) - 1.0f) / 3.0f);
+		int mortonNum = GetMortonNumber(leftUp, rightDown);
 		// デバッグ用にモートン序列番号を表示
 		if (isShowMortonNumber) {
-			Novice::ScreenPrintf((int)s->GetCollision().center.x - 15, (int)s->GetCollision().center.y - 10, "%d", mortonNum);
+			Novice::ScreenPrintf((int)s->GetCollision().center.x - 5, (int)s->GetCollision().center.y - 5, "%d", mortonNum);
 		}
 		cells[mortonNum].push_back(s);
 	}
@@ -215,11 +295,11 @@ void SmokeManager::OptimizedCollisionDetection() {
 	{
 		// 現在の空間内に登録されているオブジェクト同士を衝突
 		if (!cells[mortonNum].empty()) {
-
 			BruteForceObjectCollisionDetection(cells[mortonNum]);
-			// スタック（リスト）に登録されているオブジェクトとの衝突判定
-			if (!ObjList.empty()) {
-				for (Smoke* currentSpaceSmoke : cells[mortonNum]) {
+			for (Smoke* currentSpaceSmoke : cells[mortonNum]) {
+				// スタック（リスト）に登録されているオブジェクトとの衝突判定
+				if (!ObjList.empty()) {
+
 					for (Smoke* obj : ObjList) {
 						// 2つのSmokeインスタンスの当たり判定を取得
 						Utility::Collision collision1 = currentSpaceSmoke->GetCollision();
@@ -234,17 +314,29 @@ void SmokeManager::OptimizedCollisionDetection() {
 							}
 						}
 						else {
+							Vector2 correctionVec1, correctionVec2;
+
 							// 円同士の当たり判定を行う
-							if (Utility::CheckEllipseCollision(collision1, collision2)) {
-								// お互いに逆ベクトルをVelocityに追加
-								currentSpaceSmoke->AddVelocity(Utility::CalculateReverseVector(collision1.center, collision2.center));
-								obj->AddVelocity(Utility::CalculateReverseVector(collision2.center, collision1.center));
+							if (Utility::CheckEllipseCollision(collision1, collision2, correctionVec1, correctionVec2)) {
+								currentSpaceSmoke->AddVelocity(correctionVec1);
+								obj->AddVelocity(correctionVec2);
 							}
 						}
 					}
 				}
-			}
 
+				// カプセルとの当たり判定を検証する
+				for (MortonCapsule capsule : capsules) {
+					// Smokeインスタンスの当たり判定を取得
+					Utility::Collision collision = currentSpaceSmoke->GetCollision();
+
+					// 四角の時は実装してないので、円のときのみ行う
+					if (!Smoke::shapeIsBox) {
+						// 円とカプセルの当たり判定を行う
+						currentSpaceSmoke->HitCapsule(Utility::CheckCapsuleCollision(collision, capsule.collision));
+					}
+				}
+			}
 		}
 
 		// 次の小空間が4分木分割数を超えていなければ移動

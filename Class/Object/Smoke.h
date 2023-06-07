@@ -21,8 +21,14 @@ public: // メンバ関数
 	bool GetisDead() const { return isDead; }
 	Utility::Collision GetCollision() const { return { position_,size_ }; }
 	void AddVelocity(Vector2 velocity) { 
-		velocity_.x += velocity.x * kHitVelocityCoefficient;
-		velocity_.y += velocity.y * kHitVelocityCoefficient;
+		velocity_.x += velocity.x * xNegativeCoefficient;
+		velocity_.y += velocity.y * yNegativeCoefficient;
+		//position_.x += velocity.x * 0.1f;
+		//position_.y += velocity.y * 0.1f;
+	}
+	void HitCapsule(Vector2 velocity) {
+		position_.x += velocity.x;
+		position_.y += velocity.y;
 	}
 
 public: // Managerで書き換えてもらうSmoke共通の変数
@@ -32,15 +38,14 @@ public: // Managerで書き換えてもらうSmoke共通の変数
 	// 処理を行う形を選択するフラグ（trueならばBoxで、falseならばEllipseで処理を行う）
 	static bool shapeIsBox;
 
-	// ヒット時の粒子に付与されるベクトルの係数
-	static float kHitVelocityCoefficient;
-	// 横移動のマイナス係数
+	// ヒット時の粒子に付与されるマイナス係数
+	static float xNegativeCoefficient;
+	static float yNegativeCoefficient;
+	// 縦移動のマイナス係数
 	static float kHorizontalVelocityNegativeCoefficient;
 
 private: // メンバ定数
 
-	// 1m ... 100ピクセル
-	const static int kPixelPerMeter = 100;
 
 private: // メンバ変数
 

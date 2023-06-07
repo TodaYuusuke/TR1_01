@@ -24,7 +24,7 @@ public: // メンバ関数
 	double GetElapsedTimeH();
 
 	// ImGuiを用いて情報表示
-	void Show();
+	void CallImGui();
 
 
 private: // メンバ変数

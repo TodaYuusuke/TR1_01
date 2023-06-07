@@ -25,10 +25,10 @@ void Smoke::Initialize(Vector2 position) {
 	// 速度
 	velocity_ = { 0.0f,0.0f };
 	// 加速度
-	acceleration_ = { 0.0f,-0.03f };
+	acceleration_ = { 0.0f,-0.010f };
 
 	// 初期のサイズ
-	size_ = 10;
+	size_ = 20;
 	// 現在の透明度
 	alpha_ = 0xAA;
 }
@@ -38,7 +38,7 @@ void Smoke::Update() {
 
 	// 煙の動きをリアルにするための処理を追加していく
 
-	size_ += 0.01f;
+	//size_ += 0.05f;
 
 	// 横の速度は徐々に0に戻っていく
 	velocity_.x *= kHorizontalVelocityNegativeCoefficient;
@@ -52,12 +52,15 @@ void Smoke::Update() {
 
 
 	// 場外に出たらidDeadをtrueに
-	if (position_.x < 0 || position_.x > 1280) {
+	if (position_.x + (size_ / 2.0f) < 0 || position_.x - (size_ / 2.0f) > 1280) {
 		isDead = true;
 	}
-	if (position_.y < 0 || position_.y > 720) {
+	if (position_.y + (size_ / 2.0f) < 0 || position_.y - (size_ / 2.0f) > 720) {
 		isDead = true;
 	}
+	//if (position_.y - (size_ / 2.0f) < 0) {
+	//	position_.y = 0 + (size_ / 2.0f);
+	//}
 }
 // 描画
 void Smoke::Draw(int texture) {
@@ -87,5 +90,6 @@ void Smoke::Noise(){
 
 
 bool Smoke::shapeIsBox = false;
-float Smoke::kHitVelocityCoefficient = 0.001f;
+float Smoke::xNegativeCoefficient = 0.001f;
+float Smoke::yNegativeCoefficient = 0.001f;
 float Smoke::kHorizontalVelocityNegativeCoefficient = 0.85f;

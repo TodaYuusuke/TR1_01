@@ -1,6 +1,8 @@
 #pragma once
 #include "Smoke.h"
 #include <list>
+#include <vector>
+#include <thread>
 
 class SmokeManager
 {
@@ -22,11 +24,25 @@ public: // メンバ関数
 	// 新しい煙を追加
 	void AddEffect(Vector2 position);
 
+	// カプセルを追加
+	void AddCapsule(Vector2 position);
+	void SetEndPositionCapsule(Vector2 position);
 
 private: // メンバ変数
 
 	// 煙たち
 	std::list<Smoke*> smoke_;
+
+	struct MortonCapsule {
+		int mortonNumber;
+		Utility::CapsuleCollision collision;
+	};
+
+	// 地形（Capsule）
+	std::list <MortonCapsule> capsules;
+
+	// 並列処理用のスレッド
+	//std::vector<std::thread> threads;
 
 	// 煙のテクスチャ
 	int smokeTexture;
@@ -67,6 +83,10 @@ private: // 非公開の関数
 	/// </summary>
 	void CallImGui();
 
+	/// <summary>
+	/// 左上と右上の点からモートン序列を受け取る関数
+	/// </summary>
+	int GetMortonNumber(Vector2 leftUp, Vector2 rightDown);
 	
 	/// <summary>
 	/// 全当たり判定検証
