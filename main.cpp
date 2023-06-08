@@ -60,8 +60,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		// SPACEが押されている間、煙（×5）追加
 		if (keys[DIK_SPACE]) {
-			for (int i = 0; i < 1; i++) {
-				smokeManager->AddEffect({ 1280.0f / 2.0f,720.0f });
+			for (int i = 0; i < 5; i++) {
+				smokeManager->AddEffect({ 1280.0f / 2.0f - 200.0f,720.0f });
 			}
 		}
 		// RightClickが押されている間、カーソル位置に煙（×5）追加
