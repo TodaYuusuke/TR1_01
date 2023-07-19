@@ -21,10 +21,10 @@ public: // メンバ関数
 	bool GetisDead() const { return isDead; }
 	Utility::Collision GetCollision() const { return { position_,size_ }; }
 	void AddVelocity(Vector2 velocity) { 
-		velocity_.x += velocity.x * xNegativeCoefficient;
-		velocity_.y += velocity.y * yNegativeCoefficient;
-		//position_.x += velocity.x * 0.1f;
-		//position_.y += velocity.y * 0.1f;
+		//velocity_.x += velocity.x * xNegativeCoefficient;
+		//velocity_.y += velocity.y * yNegativeCoefficient;
+		position_.x += velocity.x * 0.5f;
+		position_.y += velocity.y * 0.5f;
 	}
 	void HitCapsule(Vector2 velocity) {
 		position_.x += velocity.x;
