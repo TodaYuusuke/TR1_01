@@ -106,8 +106,8 @@
     <ClCompile Include="C:\KamataEngine\DirectXGame\base\TextureManager.cpp" />
     <ClCompile Include="C:\KamataEngine\DirectXGame\2d\ImGuiManager.cpp" />
     <ClCompile Include="C:\KamataEngine\Adapter\Novice.cpp" />
-    <ClCompile Include="Class\Object\Smoke.cpp" />
-    <ClCompile Include="Class\Object\SmokeManager.cpp" />
+    <ClCompile Include="Class\Object\Water.cpp" />
+    <ClCompile Include="Class\Object\WaterManager.cpp" />
     <ClCompile Include="Class\Timer.cpp" />
     <ClCompile Include="Class\Utility.cpp" />
     <ClCompile Include="main.cpp" />
@@ -139,8 +139,8 @@
     <ClInclude Include="C:\KamataEngine\DirectXGame\input\Input.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\scene\GameScene.h" />
     <ClInclude Include="C:\KamataEngine\Adapter\Novice.h" />
-    <ClInclude Include="Class\Object\Smoke.h" />
-    <ClInclude Include="Class\Object\SmokeManager.h" />
+    <ClInclude Include="Class\Object\Water.h" />
+    <ClInclude Include="Class\Object\WaterManager.h" />
     <ClInclude Include="Class\Timer.h" />
     <ClInclude Include="Class\Utility.h" />
     <ClInclude Include="Matrix4x4Func.h" />

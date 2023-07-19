@@ -1,17 +1,18 @@
 #pragma once
-#include "Smoke.h"
+#include "Water.h"
 #include <list>
 #include <vector>
 #include <thread>
+#include <map>
 
-class SmokeManager
+class WaterManager
 {
 public: // メンバ関数
 
 	// コンストラクタ
-	SmokeManager();
+	WaterManager();
 	// デストラクタ
-	~SmokeManager();
+	~WaterManager();
 
 	// 初期化
 	void Initialize();
@@ -31,7 +32,7 @@ public: // メンバ関数
 private: // メンバ変数
 
 	// 煙たち
-	std::list<Smoke*> smoke_;
+	std::list<Water*> water_;
 
 	struct MortonCapsule {
 		int mortonNumber;
@@ -39,13 +40,14 @@ private: // メンバ変数
 	};
 
 	// 地形（Capsule）
-	std::list <MortonCapsule> capsules;
+	std::list<MortonCapsule*> capsules_;
 
 	// 並列処理用のスレッド
 	//std::vector<std::thread> threads;
 
 	// 煙のテクスチャ
-	int smokeTexture;
+	int waterTexture_
+		;
 
 private: // 静的なメンバ変数
 
@@ -70,13 +72,15 @@ private: // 静的なメンバ変数
 	// 空間数は4^nになる
 	int kQuadTreeResolution = 3;
 
+	float t = 100.0f;
+
 private: // 非公開の関数
 
 	
 	/// <summary>
 	/// remove_ifに渡す関数ポインタ
 	/// </summary>
-	bool SmokeDelete(const Smoke* it);
+	bool WaterDelete(const Water* it);
 	
 	/// <summary>
 	/// ImGui関連の処理をまとめた関数
@@ -84,14 +88,19 @@ private: // 非公開の関数
 	void CallImGui();
 
 	/// <summary>
-	/// 左上と右上の点からモートン序列を受け取る関数
+	/// モートン序列を受け取る関数
 	/// </summary>
 	int GetMortonNumber(Vector2 leftUp, Vector2 rightDown);
+
+	/// <summary>
+	/// モートン序列をセットする関数
+	/// </summary>
+	void SetMortonNumber(std::map<int, std::list<Water*>>* cells, Water* water);
 	
 	/// <summary>
 	/// 全当たり判定検証
 	/// </summary>
-	void BruteForceObjectCollisionDetection(std::list<Smoke*> smoke);
+	void BruteForceObjectCollisionDetection(std::list<Water*> smoke);
 
 	/// <summary>
 	/// 空間分割法をつかった当たり判定検証

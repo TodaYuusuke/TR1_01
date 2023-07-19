@@ -44,10 +44,10 @@
     <ClCompile Include="Class\Utility.cpp">
       <Filter>Class</Filter>
     </ClCompile>
-    <ClCompile Include="Class\Object\Smoke.cpp">
+    <ClCompile Include="Class\Object\Water.cpp">
       <Filter>Class\Smoke</Filter>
     </ClCompile>
-    <ClCompile Include="Class\Object\SmokeManager.cpp">
+    <ClCompile Include="Class\Object\WaterManager.cpp">
       <Filter>Class\Smoke</Filter>
     </ClCompile>
     <ClCompile Include="Class\Timer.cpp">
@@ -128,10 +128,10 @@
     <ClInclude Include="Class\Utility.h">
       <Filter>Class</Filter>
     </ClInclude>
-    <ClInclude Include="Class\Object\Smoke.h">
+    <ClInclude Include="Class\Object\Water.h">
       <Filter>Class\Smoke</Filter>
     </ClInclude>
-    <ClInclude Include="Class\Object\SmokeManager.h">
+    <ClInclude Include="Class\Object\WaterManager.h">
       <Filter>Class\Smoke</Filter>
     </ClInclude>
     <ClInclude Include="Class\Timer.h">

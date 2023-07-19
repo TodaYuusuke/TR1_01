@@ -1,19 +1,19 @@
-#include "Smoke.h"
+#include "Water.h"
 #include <Novice.h>
 #include <cstdlib>
 
 // コンストラクタ
-Smoke::Smoke() {
+Water::Water() {
 	Initialize({ -10000.0f,-10000.0f });
 	isDead = true;
 }
 // デストラクタ
-Smoke::~Smoke() {
+Water::~Water() {
 
 }
 
 // 初期化
-void Smoke::Initialize(Vector2 position) {
+void Water::Initialize(Vector2 position) {
 
 	isDead = false;
 
@@ -25,7 +25,10 @@ void Smoke::Initialize(Vector2 position) {
 	// 速度
 	velocity_ = { 0.0f,0.0f };
 	// 加速度
-	acceleration_ = { 0.0f,-0.010f };
+	//acceleration_ = { 0.0f, 9.8f / 60.0f };
+	acceleration_ = { 0.0f,0.0f };
+
+	mass = 1.0f;
 
 	// 初期のサイズ
 	size_ = 20;
@@ -33,7 +36,7 @@ void Smoke::Initialize(Vector2 position) {
 	alpha_ = 0xAA;
 }
 // 更新
-void Smoke::Update() {
+void Water::Update() {
 	if (isDead) { return; }
 
 	// 煙の動きをリアルにするための処理を追加していく
@@ -42,6 +45,11 @@ void Smoke::Update() {
 
 	// 横の速度は徐々に0に戻っていく
 	velocity_.x *= kHorizontalVelocityNegativeCoefficient;
+	// 貫通しないように速度制限
+	if (velocity_.x > 5.0f) { velocity_.x = 5.0f; }
+	if (velocity_.x < -5.0f) { velocity_.x = -5.0f; }
+	if (velocity_.y > 5.0f) { velocity_.y = 5.0f; }
+	if (velocity_.y < -5.0f) { velocity_.y = -5.0f; }
 
 	// 加速度を速度に追加
 	velocity_.x += acceleration_.x;
@@ -51,6 +59,21 @@ void Smoke::Update() {
 	position_.y += velocity_.y;
 
 
+	// 画面外に出ないように
+	//if (position_.x - (size_ / 2.0f) < 0) {
+	//	position_.x = 0 + (size_ / 2.0f);
+	//}
+	//if (position_.x + (size_ / 2.0f) > 1280) {
+	//	position_.x = 1280 - (size_ / 2.0f);
+	//}
+	//
+	//if (position_.y - (size_ / 2.0f) < 0) {
+	//	position_.y = 0 + (size_ / 2.0f);
+	//}
+	//if (position_.y + (size_ / 2.0f) > 720) {
+	//	position_.y = 720 - (size_ / 2.0f);
+	//}
+
 	// 場外に出たらidDeadをtrueに
 	if (position_.x + (size_ / 2.0f) < 0 || position_.x - (size_ / 2.0f) > 1280) {
 		isDead = true;
@@ -58,12 +81,9 @@ void Smoke::Update() {
 	if (position_.y + (size_ / 2.0f) < 0 || position_.y - (size_ / 2.0f) > 720) {
 		isDead = true;
 	}
-	//if (position_.y - (size_ / 2.0f) < 0) {
-	//	position_.y = 0 + (size_ / 2.0f);
-	//}
 }
 // 描画
-void Smoke::Draw(int texture) {
+void Water::Draw(int texture) {
 	if (isDead) { return; }
 	
 	// 四角
@@ -81,7 +101,7 @@ void Smoke::Draw(int texture) {
 
 // - 非公開の関数 - //
 
-void Smoke::Noise(){
+void Water::Noise(){
 	float sway = (float)(rand() % 201 - 100);
 	sway /= 1000.0f;
 	velocity_.x += sway;
@@ -89,7 +109,7 @@ void Smoke::Noise(){
 
 
 
-bool Smoke::shapeIsBox = false;
-float Smoke::xNegativeCoefficient = 0.001f;
-float Smoke::yNegativeCoefficient = 0.001f;
-float Smoke::kHorizontalVelocityNegativeCoefficient = 0.85f;
+bool Water::shapeIsBox = false;
+float Water::xNegativeCoefficient = 0.001f;
+float Water::yNegativeCoefficient = 0.001f;
+float Water::kHorizontalVelocityNegativeCoefficient = 0.85f;

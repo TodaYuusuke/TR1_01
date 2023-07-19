@@ -80,13 +80,32 @@ public: // メンバ関数
         // 円の半径の合計を計算
         float radiusSum = c1.size / 2.0f + c2.size / 2.0f;  
 
-        // 当たり判定の条件をチェック
+        // 当たり判定の条件をチェック    
         if (distance <= radiusSum) {
-            // 円が重なっている場合
-            // 貫通を防止するベクトルを計算
+            //// 円が重なっている場合
+            ////// 貫通を防止するベクトルを計算
+            //double overlap = c1.size + c2.radius - distance;
+            //double dx = (c2.center.x - c1.center.x) / distance;
+            //double dy = (c2.center.y - c1.center.y) / distance;
+            //correctionVec1.x = overlap * dx;
+            //correctionVec1.y = overlap * dy;
+            //correctionVec2.x = overlap * dx;
+            //correctionVec2.y = overlap * dy;
+
+             
+            //Vector2 penetrationVec = Normalize(centerVec);
+            //penetrationVec.x *= (radiusSum - distance);
+            //penetrationVec.y *= (radiusSum - distance);
+
+            //// 補正ベクトルを両方の円に返す
+            //correctionVec2 = penetrationVec;
+            //correctionVec1 = { -penetrationVec.x,-penetrationVec.y };  // 反対方向のベクトルをc2に返す
+
+            // 分離処理用のベクトル
             Vector2 penetrationVec = Normalize(centerVec);
-            penetrationVec.x *= (radiusSum - distance);
-            penetrationVec.y *= (radiusSum - distance);
+            // 貫通深度を掛ける
+            penetrationVec.x *= 20;
+            penetrationVec.x *= 20;
 
             // 補正ベクトルを両方の円に返す
             correctionVec2 = penetrationVec;

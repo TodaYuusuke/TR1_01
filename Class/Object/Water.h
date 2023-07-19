@@ -1,15 +1,16 @@
 #pragma once
 #include "Vector2.h"
 #include "Class/Utility.h"
+#include "Novice.h"
 
-class Smoke
+class Water
 {
 public: // メンバ関数
 
 	// コンストラクタ
-	Smoke();
+	Water();
 	// デストラクタ
-	~Smoke();
+	~Water();
 
 	// 初期化
 	void Initialize(Vector2 position);
@@ -21,14 +22,18 @@ public: // メンバ関数
 	bool GetisDead() const { return isDead; }
 	Utility::Collision GetCollision() const { return { position_,size_ }; }
 	void AddVelocity(Vector2 velocity) { 
-		//velocity_.x += velocity.x * xNegativeCoefficient;
-		//velocity_.y += velocity.y * yNegativeCoefficient;
-		position_.x += velocity.x * 0.5f;
-		position_.y += velocity.y * 0.5f;
+		if (velocity.x != 0 || velocity.y != 0) {/*
+			velocity_.x = velocity.x * 0.001f;
+			velocity_.y = velocity.y * 0.001f;*/
+			position_.x += velocity.x * 0.001f;
+			position_.y += velocity.y * 0.001f;
+		}
 	}
 	void HitCapsule(Vector2 velocity) {
-		position_.x += velocity.x;
-		position_.y += velocity.y;
+		if (velocity.x != 0 || velocity.y != 0) {
+			position_.x += velocity.x;
+			position_.y += velocity.y;
+		}
 	}
 
 public: // Managerで書き換えてもらうSmoke共通の変数
@@ -47,7 +52,7 @@ public: // Managerで書き換えてもらうSmoke共通の変数
 private: // メンバ定数
 
 
-private: // メンバ変数
+public: // メンバ変数
 
 	// 画面内に出た場合にtrue;
 	bool isDead;
@@ -61,6 +66,9 @@ private: // メンバ変数
 	Vector2 velocity_;
 	// 加速度
 	Vector2 acceleration_;
+
+	// 質量
+	float mass;
 
 	// 現在のサイズ
 	float size_;

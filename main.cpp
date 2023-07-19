@@ -1,7 +1,7 @@
 #include <Novice.h>
 #include <imgui.h>
 #include <cstdlib>
-#include "Class/Object/SmokeManager.h"
+#include "Class/Object/WaterManager.h"
 #include "Class/Timer.h"
 
 const char kWindowTitle[] = "TR1_01_LE2B_21_トダ_ユウスケ";
@@ -27,7 +27,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int x, y;
 
 	// 煙
-	SmokeManager* smokeManager = new SmokeManager();
+	WaterManager* waterManager = new WaterManager();
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -56,31 +56,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// Rでリセット
 		if (keys[DIK_R] && !preKeys[DIK_R]) {
 			timer.Initialize();
-			smokeManager->Initialize();
+			waterManager->Initialize();
 		}
-		// SPACEが押されている間、煙（×5）追加
+		// SPACEが押されている間、水（×5）追加
 		if (keys[DIK_SPACE]) {
 			for (int i = 0; i < 1; i++) {
-				smokeManager->AddEffect({ 1280.0f / 2.0f,720.0f });
+				waterManager->AddEffect({ 1280.0f / 2.0f,720.0f / 2.0f });
 			}
 		}
-		// RightClickが押されている間、カーソル位置に煙（×5）追加
+		// RightClickが押されている間、カーソル位置に水（×5）追加
 		if (Novice::IsPressMouse(1)) {
 			for (int i = 0; i < 1; i++) {
-				smokeManager->AddEffect({ (float)x,(float)y });
+				waterManager->AddEffect({ (float)x,(float)y });
 			}
 		}
 
 		// カプセルを作成する
 		if (Novice::IsTriggerMouse(2)) {
-			smokeManager->AddCapsule({ (float)x,(float)y });
+			waterManager->AddCapsule({ (float)x,(float)y });
 		}
 		else if (Novice::IsPressMouse(2)){
-			smokeManager->SetEndPositionCapsule({ (float)x,(float)y });
+			waterManager->SetEndPositionCapsule({ (float)x,(float)y });
 		}
 
 		// 更新処理
-		smokeManager->Update();
+		waterManager->Update();
 
 		///
 		/// ↑更新処理ここまで
@@ -90,8 +90,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
+		// 背景描画
+		Novice::DrawBox(0, 0, 1280, 720, 0, BLACK, kFillModeSolid);
+
 		// 描画処理
-		smokeManager->Draw();
+		waterManager->Draw();
 
 		// 処理回数+1
 		frame++;
